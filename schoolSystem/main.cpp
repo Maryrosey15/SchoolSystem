@@ -27,34 +27,59 @@ struct Student {
 
 //================== Functions Declaration =====================
 void line();
-vector <Student> input(vector <Student>& student);
+void input();
 vector <Student> readFromFile();
+void deleteFromFile(string search);
 
-//Gloabl variables
+//Global variables
 char answer = 'y';
+string searchInfo;
+vector <Student> student;
+
 
 int main()
 {
-    vector <Student> student;
-    input(student);
-    readFromFile();
+    system("cls");
+    cout << "\n\t\t\t\tSchool System Homepage";
+    line();
+    m:
+    cout << "\n1 Student Record | 2 Add Student | 3 Delete Record | 4 Quit";
+    cout << "\n\nType your choice here: ";
+    int choice;
+    cin >> choice;
     
+    switch (choice) {
+        case 1:
+            readFromFile();
+            break;
+        case 2:
+            input();
+            break;
+        case 3:
+            deleteFromFile(searchInfo);
+            break;
+        case 4:
+            exit(0);
+            break;
+        default:
+            cout << "\n\nInvalid choice...";
+            goto m;
+            break;
+    }
     cout << "\n\n\n";
     return 0;
 }
 
 //================== Functions Definition =====================
-vector <Student> input(vector <Student>& student) {
+void input() {
     Student s;
     cout << "\n\t\t\t\tAdd Student Information";
     line();
     do {
     cout << "\n\nEnter student name: ";
-    getline(cin, s.name);
-    cin.ignore();
+    cin >> s.name;
     cout << "Enter student age: ";
-    getline(cin, s.age);
-    cin.ignore();
+    cin >> s.age;
     cout << "Enter student grade: ";
     cin >> s.grade;
         
@@ -69,18 +94,20 @@ vector <Student> input(vector <Student>& student) {
     cout << "\n\nDo you want to add more student? (Type Y = yes and N = no): ";
     cin >> answer;
     } while(tolower(answer) == 'y');
+    
     ofstream myFile("student_file.csv", ios::app);
     for (int i = 0; i < student.size(); i++) {
-        myFile << s.name << "," << s.age << "," << s.grade << endl;
+        myFile << student[i].name << "," << student[i].age << "," << student[i].grade << endl;
     }
     myFile.close();
+    cout << "\n...Student Information added\n\n";
     
-    return (student);
+    main();
 }
 
 vector <Student> readFromFile() {
     ifstream myFile("student_file.csv");
-    cout << "\n\t\t\t\tStudent Details From File";
+    cout << "\n\n\t\t\t\tStudent Details From File";
     line();
     
     vector <Student> temp;
@@ -100,10 +127,44 @@ vector <Student> readFromFile() {
         temp.push_back(s);
     }
     myFile.close();
+    
+    main();
     return (temp);
+}
+
+void deleteFromFile(string search) {
+    cout << "\n\t\t\t\tDeleting student information";
+    line();
+    ifstream file_in("student_file.csv");
+    ofstream file_out("temp.csv", ios::app);
+    
+    do {
+        cout << "\n\nEnter student name to delete information: ";
+        cin >> search;
+        
+        vector <Student> lines;
+        string line;
+        
+        while (getline(file_in, line)) {
+            file_out << line << endl;
+        }
+    file_out.close();
+    file_in.close();
+    remove("student_file.csv");
+    rename("temp.csv", "student_file.csv");
+    cout << "\n...Deleted the file successfully";
+    readFromFile();
+    
+    cout << "\n\nDo you want to delete more student? ";
+    cout << "\n\nEnter y = yes and n = no: ";
+    cin >> answer;
+    
+    } while(_tolower(answer) == 'y');
+    
+    main();
 }
 
 void line()
 {
-    cout<<"\n===============================================\n";
+    cout<<"\n-------------------------------------------------------------------\n";
 }
